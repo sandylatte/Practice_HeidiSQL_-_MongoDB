@@ -1,0 +1,57 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# 0. LOAD LIBRARY
+
+```{r}
+library(RMariaDB)
+```
+
+# 1. EXTRACT, TRANSFORM, LOAD (ETL)
+
+# 1.1 Load Data
+
+```{r}
+db <- dbConnect(RMariaDB::MariaDB(), 
+                user='test',
+                password='test',
+                dbname='test', 
+                host='arman.my.id',
+                port = 33060)
+
+```
+
+```{r}
+sql <- "SELECT country, year, population FROM country WHERE country = 'indonesia' ORDER BY year" 
+rs <- dbSendQuery(db, sql)
+df <- dbRows <- dbFetch(rs)
+head(df)
+```
+
+```{r}
+sql1 <- "SELECT country, year, population FROM country WHERE country = 'malaysia' ORDER BY year" 
+rs1 <- dbSendQuery(db, sql1)
+df1 <- dbRows1 <- dbFetch(rs1)
+head(df1)
+```
+
+```{r}
+plot(df$year, df$population,
+     pch = 20,
+     type = "l",
+     col = "red",
+     main = "Indonesia & Malaysia Population Growth",
+     xlab = "Year",
+     ylab = "Population")
+par(new = TRUE)
+plot(df1$year, df1$population,
+     pch = 20,
+     type = "l",
+     col = "blue",
+     main = "",
+     xlab = "",
+     ylab = "")
+```
+

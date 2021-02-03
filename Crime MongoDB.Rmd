@@ -1,0 +1,62 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r library mongoDB}
+library(mongolite)
+```
+
+```{r to connect with mongoDB}
+collection <- mongo(url = "mongodb://localhost",
+                    db = "chicago",
+                    collection = "crime")
+```
+
+```{r to load data faster}
+library(data.table)
+df <- fread("Crimes_-_2001_to_Present.csv")
+head(df)
+```
+
+```{r to remove space from column names}
+names(df) <- gsub(" ", "", names(df)) #gsub function for replace
+head(df)
+```
+
+```{r to save/upload the data into mongodb}
+start_time <- Sys.time()
+collection$insert(df)
+end_time <- Sys.time()
+end_time - start_time
+```
+
+```{r to count the amount of data}
+print(collection$count())
+```
+
+```{r to preview the 1st observation}
+print(collection$iterate()$one())
+```
+
+```{r to show variation data within a Feature}
+print(collection$distinct("PrimaryType"))
+```
+
+```{r}
+print(collection$distinct("Domestic"))
+```
+
+```{r to count observations which have Domestic feature}
+print(collection$count('{"Domestic" : true}'))
+```
+
+```{r to count observations which did KDRT}
+print(collection$count('{"Domestic" : true, "PrimaryType" : "ASSAULT"}'))
+```
+
+```{r}
+df1 <- collection$find('{"Domestic" : true, "PrimaryType" : "ASSAULT"}')
+head(df1)
+```
+
